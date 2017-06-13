@@ -4,4 +4,18 @@
     <js-module name="BluetoothPrinter" src="www/BluetoothPrinter.js">
         <clobbers target="cordova.plugins.BluetoothPrinter" />
     </js-module>
+
+    <!-- ios -->
+    <platform name="ios">
+        <plugins-plist key="BluetoothPrinter" string="BluetoothPrinter" />
+
+        <config-file target="config.xml" parent="/*">
+            <feature name="BluetoothPrinter">
+                <param name="ios-package" value="BluetoothPrinter" />
+            </feature>
+        </config-file>
+
+        <header-file src="src/ios/BluetoothPrinter.h" />
+        <source-file src="src/ios/BluetoothPrinter.m" />
+    </platform>
 </plugin>
