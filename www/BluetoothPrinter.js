@@ -1,5 +1,5 @@
 var exec = require('cordova/exec');
 
-exports.coolMethod = function(arg0, success, error) {
-    exec(success, error, "BluetoothPrinter", "coolMethod", [arg0]);
+exports.getAppName = function(success, error) {
+    exec(success, error, "BluetoothPrinter", "getAppName");
 };
