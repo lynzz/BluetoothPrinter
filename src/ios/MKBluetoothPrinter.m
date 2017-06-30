@@ -283,7 +283,9 @@
                         break;
                     case MKBTPrinterInfoType_image:{
                         UIImage *image = [UIImage mk_imageWithBase64:model.text];
-                        [self.printerInfo appendImage:image alignment:[model getAlignment] maxWidth:300];
+                        if (image) {
+                            [self.printerInfo appendImage:image alignment:[model getAlignment] maxWidth:model.maxWidth];
+                        }
                     }
                         break;
                     case MKBTPrinterInfoType_seperatorLine:
