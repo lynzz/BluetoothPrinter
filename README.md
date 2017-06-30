@@ -1,3 +1,6 @@
-# cordova-plugin-bluetoothprinter
+# cordova-plugin-bluetooth-printer
 
-in development
+#### Installation
+```
+cordova plugin cordova-plugin-bluetooth-printer
+```

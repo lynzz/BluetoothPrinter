@@ -1,21 +1,44 @@
 <?xml version='1.0' encoding='utf-8'?>
-<plugin id="cordova-plugin-bluetoothprinter" version="0.1.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" 
+        id="cordova-plugin-bluetooth-printer" 
+        version="1.0.1">
+    <engines>
+    <engine name="cordova" version=">=7.0.1" />
+    </engines>
+
     <name>BluetoothPrinter</name>
-    <js-module name="BluetoothPrinter" src="www/BluetoothPrinter.js">
-        <clobbers target="cordova.plugins.BluetoothPrinter" />
+    <description>Cordova Bluetooth Printer Plugin</description>
+
+    <js-module name="printerHelper" src="www/BluetoothPrinter.js">
+        <clobbers target="BluetoothPrinter" />
     </js-module>
 
     <!-- ios -->
     <platform name="ios">
-        <plugins-plist key="BluetoothPrinter" string="BluetoothPrinter" />
+        <header-file src="src/ios/HLBluetooth/HLBLEConst.h" />
+        <source-file src="src/ios/HLBluetooth/HLBLEManager.m" />
+        <header-file src="src/ios/HLBluetooth/HLBLEManager.h" />
 
-        <config-file target="config.xml" parent="/*">
-            <feature name="BluetoothPrinter">
-                <param name="ios-package" value="BluetoothPrinter" />
+        <source-file src="src/ios/HLPrinter/HLPrinter.m" />
+        <header-file src="src/ios/HLPrinter/HLPrinter.h" />
+        <source-file src="src/ios/HLPrinter/UIImage+Bitmap.m" />
+        <header-file src="src/ios/HLPrinter/UIImage+Bitmap.h" />
+        <source-file src="src/ios/HLPrinter/UIWebView+UIImage.m" />
+        <header-file src="src/ios/HLPrinter/UIWebView+UIImage.h" />
+
+        <header-file src="src/ios/MKPrinter/MKConst.h" />
+        <source-file src="src/ios/MKPrinter/MKPrinterInfoModel.m" />
+        <header-file src="src/ios/MKPrinter/MKPrinterInfoModel.h" />
+        <source-file src="src/ios/MKPrinter/NSString+MKAdd.m" />
+        <header-file src="src/ios/MKPrinter/NSString+MKAdd.h" />
+
+        <source-file src="src/ios/MKBluetoothPrinter.m" />
+        <header-file src="src/ios/MKBluetoothPrinter.h" />
+
+        <config-file target="config.xml" parent="/widget">
+            <feature name="MKBluetoothPrinter">
+                <param name="ios-package" value="MKBluetoothPrinter" />
             </feature>
         </config-file>
-
-        <header-file src="src/ios/BluetoothPrinter.h" />
-        <source-file src="src/ios/BluetoothPrinter.m" />
     </platform>
 </plugin>
