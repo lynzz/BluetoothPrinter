@@ -218,8 +218,9 @@ window.BTPFontType = BTPFontType;
 window.BTPAlignmentType = BTPAlignmentType;
 
 
-module.exports.printerHelper = printerHelper;
-module.exports.printerInfoHelper = printerInfoHelper;
-module.exports.BTPInfoType = BTPInfoType;
-module.exports.BTPFontType = BTPFontType;
-module.exports.BTPAlignmentType = BTPAlignmentType;
+exports.scanForPeripherals = printerHelper.scanForPeripherals;
+exports.connect = printerHelper.connectPeripheral;
+exports.stopConnection = printerHelper.stopConnection;
+exports.setPrintInfo = printerHelper.setPrinterInfo;
+exports.print = printerHelper.finalPrinter;
+exports.list = printerHelper.getDeviceList;
