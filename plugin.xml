@@ -3,7 +3,7 @@
         id="cordova-plugin-bluetooth-printer" 
         version="1.0.1">
     <engines>
-    <engine name="cordova" version=">=7.0.1" />
+    <engine name="cordova" version=">=6.5.0" />
     </engines>
 
     <name>BluetoothPrinter</name>
