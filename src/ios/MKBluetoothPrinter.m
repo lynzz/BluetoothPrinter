@@ -28,8 +28,12 @@
 #pragma mark - ***** scan peripherals *****
 - (void)scanForPeripherals:(CDVInvokedUrlCommand *)command{
     BOOL bKeepCallBack = NO;
-    if (command.arguments.count > 0) {
-        bKeepCallBack = [command.arguments[0] integerValue] == 1;
+    if (command.arguments.count > 0 && command.arguments[0]) {
+        if ([command.arguments[0] isKindOfClass:[NSNumber class]]) {
+            bKeepCallBack = [command.arguments[0] integerValue] == 1;
+        }else{
+            ELog(@"参数类型错误");
+        }
     }
     
     self.scanPeripheralsCallBackId = nil;
