@@ -167,6 +167,7 @@ typedef NS_ENUM(NSInteger, HLFontSize) {
  *  添加一条分割线，like this:---------------------------
  */
 - (void)appendSeperatorLine;
+- (void)appendSpaceLine;
 - (void)appendNewLine;
 /**
  *  添加底部信息
@@ -174,6 +175,11 @@ typedef NS_ENUM(NSInteger, HLFontSize) {
  *  @param footerInfo 不填默认为 谢谢惠顾，欢迎下次光临！
  */
 - (void)appendFooter:(NSString *)footerInfo;
+
+/**
+ * 切纸
+ */
+- (void)appendCutPaper;
 
 /**
  添加自定义的data
@@ -188,5 +194,7 @@ typedef NS_ENUM(NSInteger, HLFontSize) {
  *  @return 最终的data
  */
 - (NSData *)getFinalData;
+
+
 
 @end

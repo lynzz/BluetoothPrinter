@@ -9,7 +9,19 @@
 #import <Cordova/CDVPlugin.h>
 #import "MKConst.h"
 
+
+typedef void(^CommandBlcok)(BOOL success, NSString *message);
+
 @interface MKBluetoothPrinter : CDVPlugin
+
+/** 自动连接 历史设备 */
+- (void)autoConnectPeripheral:(CDVInvokedUrlCommand *)command;
+
+/** 
+ * 是否已连接 
+ * 返回： "1":是  "0":否
+ */
+- (void)isConnectPeripheral:(CDVInvokedUrlCommand *)command;
 
 /** 
  * 扫描外设
@@ -19,6 +31,8 @@
  */
 - (void)scanForPeripherals:(CDVInvokedUrlCommand *)command;
 
+/** 停止扫描 */
+- (void)stopScan:(CDVInvokedUrlCommand *)command;
 
 /** 
  * 获取 外设列表
@@ -34,20 +48,14 @@
  */
 - (void)connectPeripheral:(CDVInvokedUrlCommand *)command;
 
-/** 
- * 设置打印信息
+/**
+ * 设置打印信息 并打印
  * 参数： json 数组
  */
-- (void)createPrinterInfo:(CDVInvokedUrlCommand *)command;
-
-/** 确认打印 */
-- (void)finalPrinter:(CDVInvokedUrlCommand *)command;
+- (void)setPrinterInfoAndPrinter:(CDVInvokedUrlCommand *)command;
 
 /** 断开外设连接 */
 - (void)stopPeripheralConnection:(CDVInvokedUrlCommand *)command;
-
-/** 清除打印数据 */
-- (void)clearPrinterInfo:(CDVInvokedUrlCommand *)command;
 
 /** 打印log */
 - (void)printLog:(CDVInvokedUrlCommand *)command;

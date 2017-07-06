@@ -3,22 +3,43 @@ var exec = require("cordova/exec");
 function BluetoothPrinter(){};
 
 /*
+ * 自动连接 历史连接过的设备
+ */
+BluetoothPrinter.prototype.autoConnectPeripheral = function(success, fail){
+    exec(success, fail, 'MKBluetoothPrinter', 'autoConnectPeripheral', []);
+}
+
+/** 
+ * 是否已连接设备 
+ * 返回： "1":是  "0":否
+ */
+BluetoothPrinter.prototype.isConnectPeripheral = function(success, fail){
+    exec(success, fail, 'MKBluetoothPrinter', 'isConnectPeripheral', []);
+}
+
+
+/*
  * 开始扫描设备
  * keep：是否持续回调 （0：否， 1：是，default:0）
  *
  * 返回的设备列表json数组
- * [{"id":"9A87E98E-BE88-5BA6-2C31-ED4869300E6E","name":"Printer_2EC1","uuid":"9A87E98E-BE88-5BA6-2C31-ED4869300E6E"}]
+ * [{"name":"Printer_2EC1","uuid":"9A87E98E-BE88-5BA6-2C31-ED4869300E6E"}]
  * 返回扫描到的外设列表信息(有可能为空)，在扫描的回调中返回，会有延时
  */
 BluetoothPrinter.prototype.scanForPeripherals = function(success, fail, keep){
     exec(success, fail, 'MKBluetoothPrinter', 'scanForPeripherals', [keep]);
 }
 
+/** 停止扫描 */
+BluetoothPrinter.prototype.stopScan = function(success, fail){
+    exec(success, fail, 'MKBluetoothPrinter', 'stopScan', [])
+}
+
 /**
  * 获取 外设列表
  * 调用后马上返回已经扫描到的外设列表。
  * 返回的设备列表json数组：
- * [{"id":"9A87E98E-BE88-5BA6-2C31-ED4869300E6E","name":"Printer_2EC1","uuid":"9A87E98E-BE88-5BA6-2C31-ED4869300E6E"}]
+ * [{"name":"Printer_2EC1","uuid":"9A87E98E-BE88-5BA6-2C31-ED4869300E6E"}]
  */
 BluetoothPrinter.prototype.getDeviceList = function(success, fail){
     exec(success,fail, 'MKBluetoothPrinter', 'getPeripherals',[]);
@@ -34,16 +55,11 @@ BluetoothPrinter.prototype.connectPeripheral = function(success, fail, uuid){
 }
 
 /**
- * 设置打印信息
+ * 设置打印信息 并打印
  * 参数jsonString， json数组字符串
  */
-BluetoothPrinter.prototype.setPrinterInfo = function(success, fail, jsonString){
-    exec(success, fail, 'MKBluetoothPrinter', 'createPrinterInfo', [jsonString]);
-}
-
-//确认打印
-BluetoothPrinter.prototype.finalPrinter = function(success, fail){
-    exec(success, fail, 'MKBluetoothPrinter', 'finalPrinter', []);
+BluetoothPrinter.prototype.setPrinterInfoAndPrinter = function(success, fail, jsonString){
+    exec(success, fail, 'MKBluetoothPrinter', 'setPrinterInfoAndPrinter', [jsonString]);
 }
 
 //断开连接
@@ -70,7 +86,8 @@ if (typeof BTPInfoType == "undefined"){
     BTPInfoType.qrCode          = 3;
     BTPInfoType.image           = 4;
     BTPInfoType.seperatorLine   = 5;
-    BTPInfoType.footer          = 6;
+    BTPInfoType.spaceLine       = 6;
+    BTPInfoType.footer          = 7;
 }
 //  字号大小 default:smalle
 if (typeof BTPFontType == "undefined"){
@@ -102,7 +119,6 @@ if (typeof BTPAlignmentType == "undefined"){
  infoModel.aligmentType = MKBTPAlignmentType.center;    对齐方式
  infoModel.maxWidth = 300;                              图片宽度
  infoModel.qrCodeSize = 12;                             二维码大小（1-16）
- infoModel.offset = 150;                                实际偏移值
  infoModel.isTitle = 0;                                 是否标题
  */
 
@@ -134,14 +150,12 @@ PrinterInfoHelper.prototype.appendText = function (text, alignment, fontType) {
 /* 列表信息
  * textList     : 信息列表，
  * isTitle      : 是否标题       optional   1是，0否，  default：0
- * offset       : 实际值偏移量    optional （只有在 2列的情况下有效）
  */
-PrinterInfoHelper.prototype.appendTextList = function (textList, isTitle, offset) {
+PrinterInfoHelper.prototype.appendTextList = function (textList, isTitle) {
     var infoModel = new Object();
     infoModel.infoType = BTPInfoType.textList;
     infoModel.textArray = textList;
     infoModel.isTitle = isTitle
-    infoModel.offset = offset;
     _printerInfos.push(infoModel);
 }
 
@@ -194,6 +208,13 @@ PrinterInfoHelper.prototype.appendSeperatorLine = function(){
     _printerInfos.push(infoModel);
 }
 
+//空行
+PrinterInfoHelper.prototype.appendSpaceLine = function(){
+    var infoModel = new Object();
+    infoModel.infoType = BTPInfoType.spaceLine;
+    _printerInfos.push(infoModel);
+}
+
 
 PrinterInfoHelper.prototype.appendFooter = function(text){
     var infoModel = new Object();
@@ -218,9 +239,8 @@ window.BTPFontType = BTPFontType;
 window.BTPAlignmentType = BTPAlignmentType;
 
 
-exports.scanForPeripherals = printerHelper.scanForPeripherals;
-exports.connect = printerHelper.connectPeripheral;
-exports.stopConnection = printerHelper.stopConnection;
-exports.setPrintInfo = printerHelper.setPrinterInfo;
-exports.print = printerHelper.finalPrinter;
-exports.list = printerHelper.getDeviceList;
+module.exports.printerHelper = printerHelper;
+module.exports.printerInfoHelper = printerInfoHelper;
+module.exports.BTPInfoType = BTPInfoType;
+module.exports.BTPFontType = BTPFontType;
+module.exports.BTPAlignmentType = BTPAlignmentType;

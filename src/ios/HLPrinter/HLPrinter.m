@@ -238,16 +238,54 @@
     [self setAlignment:HLTextAlignmentLeft];
     // 2.设置字号
     [self setFontSize:fontSize];
+    
+    NSString *text = [self getPrintString:title tail:value];
     // 3.设置标题内容
-    [self setText:title];
+    [self setText:text];
     // 4.设置实际值
-    [self setOffsetText:value];
+//    [self setOffsetText:value];
     // 5.换行
     [self appendNewLine];
     if (fontSize != HLFontSizeTitleSmalle) {
         [self appendNewLine];
     }
+}
 
+- (NSString *)getPrintString:(NSString *)leader tail:(NSString *)tail{
+    static int TOTAL = 46;//这里是根据你的纸张宽度试验出来的一个合适的总字数
+    NSMutableString *printString = [NSMutableString new];
+    [printString appendString:leader];
+    
+    int lenderLen = [self getTextLength:leader];
+    
+    if (tail) {
+        int tailLen = [self getTextLength:tail];
+        int detal = (int)(TOTAL - lenderLen - tailLen);
+        for (int i = 0; i < detal; i ++) {
+            [printString appendString:@" "];
+        }
+        [printString appendString:tail];
+    }else{
+        int detal = (int)(TOTAL - lenderLen);
+        for (int i = 0; i < detal; i ++) {
+            [printString appendString:@" "];
+        }
+    }
+    return printString;
+}
+
+- (int)getTextLength:(NSString *)text{
+    int strlength = 0;
+    char *p = (char*)[text cStringUsingEncoding:NSUnicodeStringEncoding];
+    for (int i = 0 ; i < [text lengthOfBytesUsingEncoding:NSUnicodeStringEncoding] ;i++) {
+        if (*p) {
+            p++;
+            strlength++;
+        }else {
+            p++;
+        }
+    }
+    return strlength;
 }
 
 - (void)appendTitle:(NSString *)title value:(NSString *)value valueOffset:(NSInteger)offset{
@@ -285,12 +323,12 @@
     }
     
     if (middle) {
-        [self setOffset:150 + offset];
+        [self setOffset:240 + offset];
         [self setText:middle];
     }
     
     if (right) {
-        [self setOffset:300 + offset];
+        [self setOffset:480 + offset];
         [self setText:right];
     }
     
@@ -313,15 +351,15 @@
         }
         
         if ([texts[1] length] > 0) {
-            [self setOffset:140 + offset];
+            [self setOffset:210 + offset];
             [self setText:texts[1]];
         }
         if ([texts[2] length] > 0) {
-            [self setOffset:220 + offset];
+            [self setOffset:350 + offset];
             [self setText:texts[2]];
         }
         if ([texts[3] length] > 0) {
-            [self setOffset:300 + offset];
+            [self setOffset:480 + offset];
             [self setText:texts[3]];
         }
         [self appendNewLine];
@@ -345,11 +383,11 @@
     
     // 3.换行
     [self appendNewLine];
-    
+    [self appendSpaceLine];
+
     // 4.打印图片后，恢复文字的行间距
     Byte lineSpace[] = {0x1B,0x32};
     [_printerData appendBytes:lineSpace length:sizeof(lineSpace)];
-    
 }
 
 - (void)appendBarCodeWithInfo:(NSString *)info{
@@ -402,7 +440,8 @@
     // 2.设置字号
     [self setFontSize:HLFontSizeTitleSmalle];
     // 3.添加分割线
-    NSString *line = @"- - - - - - - - - - - - - - - -";
+//    NSString *line = @"- - - - - - - - - - - - - - - -";
+    NSString *line = @"- - - - - - - - - - - - - - - - - - - - - - - -";
     NSStringEncoding enc = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingGB_18030_2000);
     NSData *data = [line dataUsingEncoding:enc];
     [_printerData appendData:data];
@@ -410,14 +449,34 @@
     [self appendNewLine];
 }
 
+- (void)appendSpaceLine{
+    // 1.设置分割线居中
+    [self setAlignment:HLTextAlignmentCenter];
+    // 2.设置字号
+    [self setFontSize:HLFontSizeTitleSmalle];
+    // 3.添加分割线
+    NSString *line = @"                           ";
+    NSStringEncoding enc = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingGB_18030_2000);
+    NSData *data = [line dataUsingEncoding:enc];
+    [_printerData appendData:data];
+    // 4.换行
+    [self appendNewLine];
+}
+
+- (void)appendCutPaper{
+    Byte bytes[] = {0x1B,0x69};
+    [_printerData appendBytes:bytes length:sizeof(bytes)];
+}
+
 - (void)appendFooter:(NSString *)footerInfo{
     if (!footerInfo || footerInfo.length == 0) {
 //        footerInfo = @"谢谢惠顾，欢迎下次光临！";
         return;
     }
-    [self appendSeperatorLine];
     [self appendText:footerInfo alignment:HLTextAlignmentCenter];
 }
+
+
 
 - (NSData *)getFinalData{
     return _printerData;
