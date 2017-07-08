@@ -464,7 +464,7 @@
 }
 
 - (void)appendCutPaper{
-    Byte bytes[] = {0x1B,0x69};
+    Byte bytes[] = {0x1D,0x56,0x41,0x00}; 
     [_printerData appendBytes:bytes length:sizeof(bytes)];
 }
 
@@ -473,6 +473,7 @@
 //        footerInfo = @"谢谢惠顾，欢迎下次光临！";
         return;
     }
+    [self appendSeperatorLine];
     [self appendText:footerInfo alignment:HLTextAlignmentCenter];
 }
 

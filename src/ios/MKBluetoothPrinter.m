@@ -32,9 +32,11 @@
 
 /** 是否已连接 */
 - (void)isConnectPeripheral:(CDVInvokedUrlCommand *)command{
-    NSString *b = self.connectPeripheral != nil ? @"1" : @"0";
+    NSString *b = [self isConnectPeripheral] ? @"1" : @"0";
     [self callBackSuccess:YES callBackId:command.callbackId message:b];
 }
+
+
 
 #pragma mark - ***** scan peripherals *****
 - (void)scanForPeripherals:(CDVInvokedUrlCommand *)command{
@@ -163,9 +165,14 @@
 
 #pragma mark - **************************************************
 #pragma mark - ***** OC method *****
+- (BOOL)isConnectPeripheral{
+    BOOL b = self.connectPeripheral && self.manager.connectedPerpheral;
+    return b;
+}
+
 /** 扫描 并连接 设备 历史设备 */
 - (void)autoConnectPeripheral{
-    if (self.connectPeripheral) {
+    if ([self isConnectPeripheral]) {
         ELog(@"已连接");
         return;
     }
@@ -442,11 +449,6 @@
                 break;
         }
     }
-    [self.printerInfo appendSpaceLine];
-    [self.printerInfo appendSpaceLine];
-    [self.printerInfo appendSpaceLine];
-    [self.printerInfo appendSpaceLine];
-    [self.printerInfo appendSpaceLine];
     [self.printerInfo appendCutPaper];
 }
 
