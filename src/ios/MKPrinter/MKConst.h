@@ -30,6 +30,7 @@ typedef NS_ENUM(NSInteger, MKBTPrinterInfoType) {
     MKBTPrinterInfoType_seperatorLine   = 5,
     MKBTPrinterInfoType_spaceLine       = 6,
     MKBTPrinterInfoType_footer          = 7,
+    MKBTPrinterInfoType_cutpage         = 8,
 };
 
 typedef NS_ENUM(NSInteger, MKBTPrinterFontType) {

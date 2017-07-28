@@ -319,7 +319,8 @@
                                   } else {
                                       statusStr = @"connect success";
                                       [weakSelf savePeripheralName:weakSelf.connectPeripheral.name];
-                                      MKBlockExec(block, YES, statusStr);
+                                      NSString *str = [NSString stringWithFormat:@"{\"uuid\":%@,\"name\":%@}", weakSelf.connectPeripheral.name, weakSelf.connectPeripheral.identifier.UUIDString];
+                                      MKBlockExec(block, YES, str);
                                       return ;
                                   }
                                   break;
@@ -445,11 +446,13 @@
             case MKBTPrinterInfoType_footer:
                 [self.printerInfo appendFooter:model.text];
                 break;
+            case MKBTPrinterInfoType_cutpage:
+                [self.printerInfo appendCutPaper];
+                break;
             default:
                 break;
         }
     }
-    [self.printerInfo appendCutPaper];
 }
 
 - (void)appentTextListWith:(MKPrinterInfoModel *)model{

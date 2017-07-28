@@ -88,6 +88,7 @@ if (typeof BTPInfoType == "undefined"){
     BTPInfoType.seperatorLine   = 5;
     BTPInfoType.spaceLine       = 6;
     BTPInfoType.footer          = 7;
+    BTPInfoType.cutpage         = 8;
 }
 //  字号大小 default:smalle
 if (typeof BTPFontType == "undefined"){
@@ -215,6 +216,12 @@ PrinterInfoHelper.prototype.appendSpaceLine = function(){
     _printerInfos.push(infoModel);
 }
 
+//切纸
+PrinterInfoHelper.prototype.appendCutpage = function(){
+    var infoModel = new Object();
+    infoModel.infoType = BTPInfoType.cutpage;
+    _printerInfos.push(infoModel);
+}
 
 PrinterInfoHelper.prototype.appendFooter = function(text){
     var infoModel = new Object();
