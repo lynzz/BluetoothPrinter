@@ -374,59 +374,67 @@ public class MKBluetoothPrinter extends CordovaPlugin {
                if(sendData!=null&&!"".equals(sendData)) {
 
 
-                   JSONObject dataJson = new JSONObject(sendData);
-                   ///获取globalDatatop数据
-                   JSONArray top_array = dataJson.optJSONArray("globalDatatop");
-                   //获取globalDatafoot数据
-                   JSONArray foot_array = dataJson.optJSONArray("globalDatafoot");
-                   //获取personsData数据
-                   JSONArray persons_object = dataJson.optJSONArray("personsData");
+                   JSONArray top_array = new JSONArray(sendData);
 
-
-                    MKBluetoothPrinter.selectCommand(MKBluetoothPrinter.RESET);
-                   MKBluetoothPrinter.selectCommand(MKBluetoothPrinter.LINE_SPACING_DEFAULT);
-
-                   if (persons_object != null && persons_object.length() > 0) {
-                       for (int j = 0; j < persons_object.length(); j++) {
-                           JSONObject person = (JSONObject) persons_object.get(j);
-
-
-                           if(person!=null) {
-                               JSONArray person_arr = person.optJSONArray("person");
-                               if (person_arr != null && person_arr.length() > 0) {
-
-
-                                           //循环打印头部
-                                           if (top_array != null && top_array.length() > 0) {
-                                               for (int m = 0; m < top_array.length(); m++) {
-                                                   JSONObject jsonData = (JSONObject) top_array.get(m);
-                                                    sendprint(jsonData);
-                                               }
-                                           }
-                                           for (int n = 0; n < person_arr.length(); n++) {
-                                               JSONObject jsonData = (JSONObject) person_arr.get(n);
-                                               sendprint(jsonData);
-                                           }
-
-
-                                           //循环打印底部部
-                                           if (foot_array != null && foot_array.length() > 0) {
-                                               for (int h = 0; h < foot_array.length(); h++) {
-                                                   JSONObject jsonData = (JSONObject) foot_array.get(h);
-                                                    sendprint(jsonData);
-                                               }
-                                           }
-                                           MKBluetoothPrinter.printText("\n");
-                                           MKBluetoothPrinter.printText("\n");
-
-                                           //结束循环时
-                                           MKBluetoothPrinter.selectCommand(MKBluetoothPrinter.getCutPaperCmd());
-
-
-                               }
+                   if (top_array != null && top_array.length() > 0) {
+                           for (int m = 0; m < top_array.length(); m++) {
+                               JSONObject jsonData = (JSONObject) top_array.get(m);
+                                sendprint(jsonData);
                            }
                        }
-                   }
+//                     JSONObject dataJson = new JSONObject(sendData);
+//                   ///获取globalDatatop数据
+//                   JSONArray top_array = dataJson.optJSONArray("globalDatatop");
+//                   //获取globalDatafoot数据
+//                   JSONArray foot_array = dataJson.optJSONArray("globalDatafoot");
+//                   //获取personsData数据
+//                   JSONArray persons_object = dataJson.optJSONArray("personsData");
+//
+//
+//                    MKBluetoothPrinter.selectCommand(MKBluetoothPrinter.RESET);
+//                   MKBluetoothPrinter.selectCommand(MKBluetoothPrinter.LINE_SPACING_DEFAULT);
+//
+//                   if (persons_object != null && persons_object.length() > 0) {
+//                       for (int j = 0; j < persons_object.length(); j++) {
+//                           JSONObject person = (JSONObject) persons_object.get(j);
+//
+//
+//                           if(person!=null) {
+//                               JSONArray person_arr = person.optJSONArray("person");
+//                               if (person_arr != null && person_arr.length() > 0) {
+//
+//
+//                                           //循环打印头部
+//                                           if (top_array != null && top_array.length() > 0) {
+//                                               for (int m = 0; m < top_array.length(); m++) {
+//                                                   JSONObject jsonData = (JSONObject) top_array.get(m);
+//                                                    sendprint(jsonData);
+//                                               }
+//                                           }
+//                                           for (int n = 0; n < person_arr.length(); n++) {
+//                                               JSONObject jsonData = (JSONObject) person_arr.get(n);
+//                                               sendprint(jsonData);
+//                                           }
+//
+//
+//                                           //循环打印底部部
+//                                           if (foot_array != null && foot_array.length() > 0) {
+//                                               for (int h = 0; h < foot_array.length(); h++) {
+//                                                   JSONObject jsonData = (JSONObject) foot_array.get(h);
+//                                                    sendprint(jsonData);
+//                                               }
+//                                           }
+//                                           MKBluetoothPrinter.printText("\n");
+//                                           MKBluetoothPrinter.printText("\n");
+//
+//                                           //结束循环时
+//                                           MKBluetoothPrinter.selectCommand(MKBluetoothPrinter.getCutPaperCmd());
+//
+//
+//                               }
+//                           }
+//                       }
+//                   }
                }
                 callbackContext.success("打印成功！");
             } catch (Exception e) {
