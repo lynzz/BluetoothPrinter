@@ -450,6 +450,7 @@ public class MKBluetoothPrinter extends CordovaPlugin {
 
 
         try{
+                System.out.println("jsonData:"+jsonData);
                 int infoType = jsonData.optInt("infoType");
                 String text = jsonData.optString("text");
                 int fontType = jsonData.optInt("fontType");
@@ -565,6 +566,9 @@ public class MKBluetoothPrinter extends CordovaPlugin {
                     MKBluetoothPrinter.printText("\n");
                 } else if (infoType == 7) {
                     MKBluetoothPrinter.printText(text);
+                }else if(infoType == 8) {
+                    //结束循环时
+                    MKBluetoothPrinter.selectCommand(MKBluetoothPrinter.getCutPaperCmd());
                 }
                 MKBluetoothPrinter.printText("\n");
 
