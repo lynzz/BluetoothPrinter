@@ -7,6 +7,14 @@
             <script type="text/javascript" charset="utf-8" src="BluetoothPrinter.js"></script>
             <script type="text/javascript" charset="utf-8">
 
+            function setPrinterPageWidth(){
+                printerHelper.setPrinterPageWidth(printOCLogSuccess, failedCallBack, 58);
+            }
+            
+            function getCurrentSetPageWidth(){
+                printerHelper.getCurrentSetPageWidth(printOCLogSuccess, failedCallBack);
+            }
+
             //自动连接
             function autoConnect(){
                 printerHelper.autoConnectPeripheral(printOCLogSuccess, failedCallBack);
@@ -44,7 +52,7 @@
                     uuidStr = devicesList[1].uuid;
                 }
                 printOCLog(uuidStr);
-                printerHelper.connectPeripheral(printOCLogSuccess, failedCallBack,"Printer001");
+                printerHelper.connectPeripheral(printOCLogSuccess, failedCallBack,"Printer_2EC1"); //Printer001
             }
 
             //生成打印信息
@@ -140,6 +148,11 @@
         <button style="font-size:17px;" onclick="setPrinterInfoAndPrinter();">设置打印信息并打印</button>
         <br>
         <button style="font-size:17px;" onclick="stopConnection();">断开连接</button>
+        <br>
+        <br>
+        <button style="font-size:17px;" onclick="setPrinterPageWidth();">设置纸张宽度</button>
+        <br>
+        <button style="font-size:17px;" onclick="getCurrentSetPageWidth();">获取当前纸张宽度</button>
         <br>
          <br>
     </body>
