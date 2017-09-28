@@ -12,10 +12,14 @@
 #define kHLPadding 2
 #define kHLPreviewWidth 320
 
+#define KDefaultPageWidth 78
+static NSString * const kUD_pringerPageWidth = @"kUD_pringerPageWidth";
+
 @interface HLPrinter ()
 
 /** 将要打印的排版后的数据 */
-@property (strong, nonatomic)   NSMutableData            *printerData;
+@property (strong, nonatomic) NSMutableData *printerData;
+@property (strong, nonatomic) MKPageWidthConfig *config;
 
 @end
 
@@ -29,6 +33,7 @@
     return self;
 }
 
+static NSInteger k_pageWidth = 0;
 - (void)defaultSetting{
     _printerData = [[NSMutableData alloc] init];
     
@@ -43,6 +48,29 @@
     Byte fontBytes[] = {0x1B,0x4D,0x00};
     [_printerData appendBytes:fontBytes length:sizeof(fontBytes)];
     
+    k_pageWidth = [[NSUserDefaults standardUserDefaults] integerForKey:kUD_pringerPageWidth];
+    if (k_pageWidth <= 0) {
+        k_pageWidth = KDefaultPageWidth;
+        [[NSUserDefaults standardUserDefaults] setInteger:k_pageWidth forKey:kUD_pringerPageWidth];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+    
+    _config = [[MKPageWidthConfig alloc] init];
+    [_config setupConfigWith:k_pageWidth];
+}
+
+#pragma mark - ***** 设置打印机纸张宽度 ******
+- (void)setPageWidth:(NSInteger)width{
+    if (width > 0) {
+        k_pageWidth = width;
+        [[NSUserDefaults standardUserDefaults] setInteger:k_pageWidth forKey:kUD_pringerPageWidth];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        [self.config setupConfigWith:k_pageWidth];
+     }
+}
+
+- (NSInteger)getPageWidth{
+    return k_pageWidth;
 }
 
 #pragma mark - -------------基本操作----------------
@@ -252,7 +280,7 @@
 }
 
 - (NSString *)getPrintString:(NSString *)leader tail:(NSString *)tail{
-    static int TOTAL = 46;//这里是根据你的纸张宽度试验出来的一个合适的总字数
+    int TOTAL = self.config.virtualWidth; //这里是根据你的纸张宽度试验出来的一个合适的总字数
     NSMutableString *printString = [NSMutableString new];
     [printString appendString:leader];
     
@@ -323,12 +351,12 @@
     }
     
     if (middle) {
-        [self setOffset:240 + offset];
+        [self setOffset:[self.config.offsetAryfor3Text[0] intValue] + offset];
         [self setText:middle];
     }
     
     if (right) {
-        [self setOffset:480 + offset];
+        [self setOffset:[self.config.offsetAryfor3Text[1] intValue] + offset];
         [self setText:right];
     }
     
@@ -351,15 +379,15 @@
         }
         
         if ([texts[1] length] > 0) {
-            [self setOffset:210 + offset];
+            [self setOffset:[self.config.offsetAryfor4Text[0] intValue] + offset];
             [self setText:texts[1]];
         }
         if ([texts[2] length] > 0) {
-            [self setOffset:350 + offset];
+            [self setOffset:[self.config.offsetAryfor4Text[1] intValue] + offset];
             [self setText:texts[2]];
         }
         if ([texts[3] length] > 0) {
-            [self setOffset:480 + offset];
+            [self setOffset:[self.config.offsetAryfor4Text[2] intValue] + offset];
             [self setText:texts[3]];
         }
         [self appendNewLine];
@@ -440,8 +468,7 @@
     // 2.设置字号
     [self setFontSize:HLFontSizeTitleSmalle];
     // 3.添加分割线
-//    NSString *line = @"- - - - - - - - - - - - - - - -";
-    NSString *line = @"- - - - - - - - - - - - - - - - - - - - - - - -";
+    NSString *line = self.config.lineStr;
     NSStringEncoding enc = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingGB_18030_2000);
     NSData *data = [line dataUsingEncoding:enc];
     [_printerData appendData:data];
@@ -454,7 +481,7 @@
     [self setAlignment:HLTextAlignmentCenter];
     // 2.设置字号
     [self setFontSize:HLFontSizeTitleSmalle];
-    // 3.添加分割线
+    // 3.添加空行
     NSString *line = @"                           ";
     NSStringEncoding enc = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingGB_18030_2000);
     NSData *data = [line dataUsingEncoding:enc];
@@ -475,12 +502,32 @@
     }
     [self appendSeperatorLine];
     [self appendText:footerInfo alignment:HLTextAlignmentCenter];
+    [self appendNewLine];
+}
+
+/** get final data */
+- (NSData *)getFinalData{
+    return _printerData;
 }
 
 
+#pragma mark - ***** page width auto adjust ******
 
-- (NSData *)getFinalData{
-    return _printerData;
+@end
+
+@implementation MKPageWidthConfig
+- (void)setupConfigWith:(NSInteger)width{
+    if (width == 58) {
+        self.lineStr = @"- - - - - - - - - - - - - - - -";
+        self.offsetAryfor3Text = [NSArray arrayWithObjects:@(150), @(300), nil];
+        self.offsetAryfor4Text = [NSArray arrayWithObjects:@(140), @(220), @(300), nil];
+        self.virtualWidth = 30;
+    }else{
+        self.lineStr = @"- - - - - - - - - - - - - - - - - - - - - - - -";
+        self.offsetAryfor3Text = [NSArray arrayWithObjects:@(240), @(480), nil];
+        self.offsetAryfor4Text = [NSArray arrayWithObjects:@(210), @(350), @(480), nil];
+        self.virtualWidth = 46;
+    }
 }
 
 @end

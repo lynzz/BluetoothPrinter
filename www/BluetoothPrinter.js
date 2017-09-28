@@ -3,6 +3,20 @@ var exec = require("cordova/exec");
 function BluetoothPrinter(){};
 
 /*
+ * 设置打印机宽度
+ */
+ BluetoothPrinter.prototype.setPrinterPageWidth = function(success, fail, width){
+    exec(success, fail, 'MKBluetoothPrinter', 'setPrinterPageWidth',[width]);
+ }
+
+/*
+ * 获取当前设置的纸张宽度
+ */
+BluetoothPrinter.prototype.getCurrentSetPageWidth = function(success, fail){
+    exec(success, fail, 'MKBluetoothPrinter', 'getCurrentSetPageWidth');
+}
+
+/*
  * 自动连接 历史连接过的设备
  */
 BluetoothPrinter.prototype.autoConnectPeripheral = function(success, fail){
@@ -233,6 +247,7 @@ PrinterInfoHelper.prototype.appendFooter = function(text){
 // 获取打印信息的 json 字符串
 PrinterInfoHelper.prototype.getPrinterInfoJsonString = function(){
     var jsonStr = JSON.stringify(_printerInfos);
+    _printerInfos = [];
     return jsonStr;
 }
 

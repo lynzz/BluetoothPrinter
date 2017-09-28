@@ -14,6 +14,16 @@ typedef void(^CommandBlcok)(BOOL success, NSString *message);
 
 @interface MKBluetoothPrinter : CDVPlugin
 
+/*
+ * 设置打印机纸张宽度
+ */
+- (void)setPrinterPageWidth:(CDVInvokedUrlCommand *)command;
+
+/*
+ * 获取当前设置的打印机纸张宽度
+ */
+- (void)getCurrentSetPageWidth:(CDVInvokedUrlCommand *)command;
+
 /** 自动连接 历史设备 */
 - (void)autoConnectPeripheral:(CDVInvokedUrlCommand *)command;
 

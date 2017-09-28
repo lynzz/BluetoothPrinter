@@ -32,6 +32,10 @@ typedef NS_ENUM(NSInteger, HLFontSize) {
 
 @interface HLPrinter : NSObject
 
+#pragma mark - ***** 设置打印机纸张宽度 ******
+- (void)setPageWidth:(NSInteger)width;
+- (NSInteger)getPageWidth;
+
 /**
  *  添加单行标题,默认字号是小号字体
  *
@@ -197,4 +201,13 @@ typedef NS_ENUM(NSInteger, HLFontSize) {
 
 
 
+@end
+
+
+@interface MKPageWidthConfig : NSObject
+@property (nonatomic, copy) NSString *lineStr;
+@property (nonatomic, copy) NSArray *offsetAryfor3Text;
+@property (nonatomic, copy) NSArray *offsetAryfor4Text;
+@property (nonatomic, assign) int virtualWidth;
+- (void)setupConfigWith:(NSInteger)width;
 @end

@@ -25,6 +25,30 @@
 
 @implementation MKBluetoothPrinter
 
+/*
+ * 设置打印机纸张宽度
+ */
+- (void)setPrinterPageWidth:(CDVInvokedUrlCommand *)command{
+    if (command.arguments.count > 0 && command.arguments[0] != [NSNull null]) {
+        NSString *param = command.arguments[0];
+        NSInteger width = param.integerValue;
+        if (width > 0) {
+            [self.printerInfo setPageWidth:width];
+            [self callBackSuccess:YES callBackId:command.callbackId message:[NSString stringWithFormat:@"设置纸张宽度成功:%ld",width]];
+            return;
+        }
+    }
+    [self callBackSuccess:NO callBackId:command.callbackId message:@"error: not find param with page width || page width <= 0"];
+}
+
+/*
+ * 获取当前设置的打印机纸张宽度
+ */
+- (void)getCurrentSetPageWidth:(CDVInvokedUrlCommand *)command{
+    NSInteger cacheWidth = [self.printerInfo getPageWidth];
+    [self callBackSuccess:YES callBackId:command.callbackId message:[NSString stringWithFormat:@"%ld",cacheWidth]];
+}
+
 /** 自动连接 */
 - (void)autoConnectPeripheral:(CDVInvokedUrlCommand *)command{
     [self autoConnectPeripheral];
@@ -453,6 +477,10 @@
                 break;
         }
     }
+    if ([self.printerInfo getPageWidth] == 58) {
+        [self.printerInfo appendNewLine];
+        [self.printerInfo appendNewLine];
+    }
 }
 
 - (void)appentTextListWith:(MKPrinterInfoModel *)model{
@@ -496,7 +524,6 @@
         [self.manager writeValue:mainData forCharacteristic:self.chatacter type:CBCharacteristicWriteWithResponse completionBlock:^(CBCharacteristic *characteristic, NSError *error) {
             if (!error) {
                 MKBlockExec(block, YES, @"printer sucess");
-                ELog(@"printer sucess");
             }else{
                 MKBlockExec(block, NO, @"printer fail");
             }
