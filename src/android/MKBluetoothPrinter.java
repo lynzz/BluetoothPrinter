@@ -61,6 +61,8 @@ public class MKBluetoothPrinter extends CordovaPlugin {
     private static OutputStream outputStream = null;
     private static final UUID uuid = UUID
             .fromString("00001101-0000-1000-8000-00805F9B34FB");
+    private static  String  uuid_bl ="";
+    private static  String name_bl ="";
 
     /**
      * 复位打印机
@@ -120,24 +122,7 @@ public class MKBluetoothPrinter extends CordovaPlugin {
     /**
      * 打印纸一行最大的字节
      */
-    private static final int LINE_BYTE_SIZE = 48;
-
-    /**
-     * 打印三列时，中间一列的中心线距离打印纸左侧的距离
-     */
-    private static final int LEFT_LENGTH =LINE_BYTE_SIZE/2;
-
-    /**
-     * 打印三列时，中间一列的中心线距离打印纸右侧的距离
-     */
-    private static final int RIGHT_LENGTH = LINE_BYTE_SIZE/2;
-
-    /**
-     * 打印三列时，第一列汉字最多显示几个文字
-     */
-    private static final int LEFT_TEXT_MAX_LENGTH = LEFT_LENGTH/2-2;
-
-
+    private static  int LINE_BYTE_SIZE = 48;
 
 
     // 对齐方式
@@ -167,6 +152,18 @@ public class MKBluetoothPrinter extends CordovaPlugin {
         //自动连接 历史连接过的设备
         if (action.equals("autoConnectPeripheral")) {
             autoConnect(args, callbackContext);
+            return true;
+        }
+
+        //设置打印机宽度
+        if (action.equals("setPrinterPageWidth")) {
+            setPrinterPageWidth(args, callbackContext);
+            return true;
+        }
+
+        //获取当前设置的纸张宽度
+        if (action.equals("getCurrentSetPageWidth")) {
+            getCurrentSetPageWidth(args, callbackContext);
             return true;
         }
 
@@ -241,6 +238,8 @@ public class MKBluetoothPrinter extends CordovaPlugin {
                     bluetoothSocket = device
                             .createRfcommSocketToServiceRecord(uuid);
                     bluetoothSocket.connect();
+                    name_bl=device.getName();
+                    uuid_bl=device.getAddress();
                     outputStream = bluetoothSocket.getOutputStream();
                     isConnection = true;
                     callbackContext.success("连接成功");
@@ -255,13 +254,45 @@ public class MKBluetoothPrinter extends CordovaPlugin {
     }
 
     /*
+  *设置打印机宽度
+   */
+    public void setPrinterPageWidth(final JSONArray args, final CallbackContext callbackContext)  throws JSONException {
+        String size = "78";
+        try {
+            size = args.getString(0);
+            if("58".equals(size)){
+                LINE_BYTE_SIZE=32;
+            }else{
+                LINE_BYTE_SIZE=48;
+            }
+            callbackContext.success("0");
+        } catch (Exception e) {
+            e.printStackTrace();
+            callbackContext.success("1");
+        }
+    }
+
+    /*
+  *获取当前设置的纸张宽度
+   */
+    public void getCurrentSetPageWidth(final JSONArray args, final CallbackContext callbackContext)  throws JSONException {
+        String size = "78";
+
+        if(LINE_BYTE_SIZE==32){
+            size="58";
+        }
+        callbackContext.success(size);
+
+    }
+    /*
     *是否已连接设备   * 返回： "1":是  "0":否
      */
     public void isConnectPeripheral(final JSONArray args, final CallbackContext callbackContext)  throws JSONException {
         if (isConnection) {
             JSONArray json = new JSONArray();
                 JSONObject jo = new JSONObject();
-                jo.put("uuid", uuid);
+                jo.put("name", name_bl);
+                 jo.put("uuid", uuid_bl);
                 json.put(jo);
             callbackContext.success(json);
         } else {
@@ -300,6 +331,8 @@ public class MKBluetoothPrinter extends CordovaPlugin {
                 bluetoothSocket.connect();
                 outputStream = bluetoothSocket.getOutputStream();
                 isConnection = true;
+                name_bl=device.getName();
+                uuid_bl=device.getAddress();
                 callbackContext.success("连接成功");
             } catch (Exception e) {
                 isConnection = false;
@@ -382,6 +415,14 @@ public class MKBluetoothPrinter extends CordovaPlugin {
                                 sendprint(jsonData);
                            }
                        }
+
+                   if(LINE_BYTE_SIZE==32){
+                       MKBluetoothPrinter.printText("\n");
+                       MKBluetoothPrinter.printText("\n");
+                       MKBluetoothPrinter.printText("\n");
+                       MKBluetoothPrinter.printText("\n");
+                       MKBluetoothPrinter.printText("\n");
+                   }
                    //结束循环时
                     MKBluetoothPrinter.selectCommand(MKBluetoothPrinter.getCutPaperCmd());
 //                     JSONObject dataJson = new JSONObject(sendData);
@@ -532,12 +573,13 @@ public class MKBluetoothPrinter extends CordovaPlugin {
 
                     bitmap =compressPic(bitmap);
 
-                    //图片的长和框必须是大于24*size
-                      byte[] draw2PxPoint = draw2PxPoint(bitmap);
-                    //发送打印图片前导指令
+                    if(bitmap!=null) {
+                        //图片的长和框必须是大于24*size
+                        byte[] draw2PxPoint = draw2PxPoint(bitmap);
+                        //发送打印图片前导指令
 
-                    MKBluetoothPrinter.selectCommand(draw2PxPoint);
-
+                        MKBluetoothPrinter.selectCommand(draw2PxPoint);
+                    }
 
                     //图片的长和框必须是大于24*size
                 //  byte[] draw2PxPoint = PicFromPrintUtils.draw2PxPoint(bitmap);
@@ -587,18 +629,23 @@ public class MKBluetoothPrinter extends CordovaPlugin {
      * @param
      */
     public static Bitmap compressPic(Bitmap bitmap) {
-        // 获取这个图片的宽和高
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
-        // 指定调整后的宽度和高度
-        //int newWidth = 240;
-       // int newHeight = 240;
-        int newWidth = bitmap.getWidth();
-         int newHeight = bitmap.getHeight();
-        Bitmap targetBmp = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888);
-        Canvas targetCanvas = new Canvas(targetBmp);
-        targetCanvas.drawColor(0xffffffff);
-        targetCanvas.drawBitmap(bitmap, new Rect(0, 0, width, height), new Rect(0, 0, newWidth, newHeight), null);
+        Bitmap targetBmp =null;
+        try{
+            // 获取这个图片的宽和高
+            int width = bitmap.getWidth();
+            int height = bitmap.getHeight();
+            // 指定调整后的宽度和高度
+            //int newWidth = 240;
+           // int newHeight = 240;
+            int newWidth = bitmap.getWidth();
+             int newHeight = bitmap.getHeight();
+             targetBmp = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888);
+            Canvas targetCanvas = new Canvas(targetBmp);
+            targetCanvas.drawColor(0xffffffff);
+            targetCanvas.drawBitmap(bitmap, new Rect(0, 0, width, height), new Rect(0, 0, newWidth, newHeight), null);
+        }catch (Exception e){
+
+        }
         return targetBmp;
     }
 
@@ -892,6 +939,22 @@ public class MKBluetoothPrinter extends CordovaPlugin {
      */
     @SuppressLint("NewApi")
     public static String printThreeData(String leftText, String middleText, String rightText) {
+
+        /**
+         * 打印三列时，中间一列的中心线距离打印纸左侧的距离
+         */
+       int LEFT_LENGTH =LINE_BYTE_SIZE/2;
+
+        /**
+         * 打印三列时，中间一列的中心线距离打印纸右侧的距离
+         */
+        int RIGHT_LENGTH = LINE_BYTE_SIZE/2;
+
+        /**
+         * 打印三列时，第一列汉字最多显示几个文字
+         */
+        int LEFT_TEXT_MAX_LENGTH = LEFT_LENGTH/2-2;
+
         StringBuilder sb = new StringBuilder();
         // 左边最多显示 LEFT_TEXT_MAX_LENGTH 个汉字 + 两个点
         if (leftText.length() > LEFT_TEXT_MAX_LENGTH) {
@@ -934,6 +997,32 @@ public class MKBluetoothPrinter extends CordovaPlugin {
     @SuppressLint("NewApi")
     public static String printFourData(String leftText, String middleText1, String middleText2, String rightText) {
         StringBuilder sb = new StringBuilder();
+        /**
+         * 打印三列时，中间一列的中心线距离打印纸左侧的距离
+         */
+        int LEFT_LENGTH =LINE_BYTE_SIZE/2;
+
+        /**
+         * 打印三列时，中间一列的中心线距离打印纸右侧的距离
+         */
+        int RIGHT_LENGTH = LINE_BYTE_SIZE/2;
+
+        /**
+         * 打印三列时，第一列汉字最多显示几个文字
+         */
+
+        int sub_length=2;
+        if(LINE_BYTE_SIZE==32){
+            sub_length=0;
+        }
+
+        int sub_length2=1;
+       // if(LINE_BYTE_SIZE==32){
+          //  sub_length2=1;
+      //  }
+
+        int LEFT_TEXT_MAX_LENGTH = LEFT_LENGTH/2-sub_length;
+
         // 左边最多显示 LEFT_TEXT_MAX_LENGTH 个汉字 + 两个点
         if (leftText.length() > (LEFT_TEXT_MAX_LENGTH+2)/2) {
             leftText = leftText.substring(0, (LEFT_TEXT_MAX_LENGTH+2)/2) + "..";
@@ -947,7 +1036,7 @@ public class MKBluetoothPrinter extends CordovaPlugin {
         // 计算左侧文字和中间文字的空格长度
         int marginBetweenLeftAndMiddle1 = LEFT_LENGTH- leftTextLength - middle1TextLength ;
 
-        for (int i = LEFT_LENGTH/4; i < marginBetweenLeftAndMiddle1; i++) {
+        for (int i = LEFT_LENGTH/4-sub_length2; i < marginBetweenLeftAndMiddle1; i++) {
             sb.append(" ");
         }
         sb.append(middleText1);
@@ -956,7 +1045,7 @@ public class MKBluetoothPrinter extends CordovaPlugin {
         // 计算右侧文字和中间文字的空格长度
         int marginBetweenMiddleAndRight = RIGHT_LENGTH- middle2TextLength - rightTextLength;
 
-        for (int i = RIGHT_LENGTH/4; i < marginBetweenMiddleAndRight; i++) {
+        for (int i = RIGHT_LENGTH/4-sub_length2; i < marginBetweenMiddleAndRight; i++) {
             sb.append(" ");
         }
         sb.append(middleText2);
@@ -964,7 +1053,7 @@ public class MKBluetoothPrinter extends CordovaPlugin {
         // 计算右侧文字和中间文字的空格长度
         int marginBetweenMiddle2AndRight = RIGHT_LENGTH - middle2TextLength  - rightTextLength;
 
-        for (int i = RIGHT_LENGTH/4; i < marginBetweenMiddle2AndRight; i++) {
+        for (int i = RIGHT_LENGTH/4-sub_length2; i < marginBetweenMiddle2AndRight; i++) {
             sb.append(" ");
         }
         // 打印的时候发现，最右边的文字总是偏右一个字符，所以需要删除一个空格
