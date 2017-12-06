@@ -403,7 +403,7 @@ static NSInteger k_pageWidth = 0;
     [self setAlignment:alignment];
     
     // 2.设置图片
-    UIImage *newImage = [image imageWithscaleMaxWidth:maxWidth];
+    UIImage *newImage = [image imageWithscaleMaxWidth:250];
 //    newImage = [newImage blackAndWhiteImage];
     
     NSData *imageData = [newImage bitmapData];
