@@ -958,7 +958,7 @@ public class MKBluetoothPrinter extends CordovaPlugin {
         StringBuilder sb = new StringBuilder();
         // 左边最多显示 LEFT_TEXT_MAX_LENGTH 个汉字 + 两个点
         if (leftText.length() > LEFT_TEXT_MAX_LENGTH) {
-            leftText = leftText.substring(0, LEFT_TEXT_MAX_LENGTH) + "..";
+            //leftText = leftText.substring(0, LEFT_TEXT_MAX_LENGTH) + "..";
         }
         int leftTextLength = getBytesLength(leftText);
         int middleTextLength = getBytesLength(middleText);
@@ -1000,6 +1000,68 @@ public class MKBluetoothPrinter extends CordovaPlugin {
         /**
          * 打印三列时，中间一列的中心线距离打印纸左侧的距离
          */
+        int LEFT_LENGTH =LINE_BYTE_SIZE;
+
+        /**
+         * 打印三列时，中间一列的中心线距离打印纸右侧的距离
+         */
+      //  int RIGHT_LENGTH_1 = LEFT_LENGTH-20;
+        int RIGHT_LENGTH_2 = 6;
+        int RIGHT_LENGTH_3 = 6;
+        int RIGHT_LENGTH_4 = 8;
+        int RIGHT_LENGTH_1 = LEFT_LENGTH-RIGHT_LENGTH_2-RIGHT_LENGTH_3-RIGHT_LENGTH_4;
+        /**
+         * 打印三列时，第一列汉字最多显示几个文字
+         */
+
+        int sub_length=2;
+        if(LINE_BYTE_SIZE==32){
+            sub_length=0;
+        }
+
+        int leftTextLength = getBytesLength(leftText);
+        int middle1TextLength = getBytesLength(middleText1);
+        int middle2TextLength = getBytesLength(middleText2);
+       // int rightTextLength = getBytesLength(rightText);
+
+        sb.append(leftText);
+
+        for (int i = leftTextLength; i < RIGHT_LENGTH_1; i++) {
+            sb.append(" ");
+        }
+
+        sb.append(middleText1);
+
+        for (int i = RIGHT_LENGTH_1+middle1TextLength; i < RIGHT_LENGTH_1+RIGHT_LENGTH_2; i++) {
+            sb.append(" ");
+        }
+        sb.append(middleText2);
+
+        for (int i = RIGHT_LENGTH_1+RIGHT_LENGTH_2+middle2TextLength; i < RIGHT_LENGTH_1+RIGHT_LENGTH_2+RIGHT_LENGTH_3; i++) {
+            sb.append(" ");
+        }
+
+        sb.append(rightText);
+
+
+        // 打印的时候发现，最右边的文字总是偏右一个字符，所以需要删除一个空格
+       // sb.delete(sb.length() - 3, sb.length()).append(rightText);
+        return sb.toString();
+    }
+    /**
+     * 打印四列
+     *
+     * @param leftText   左侧文字
+     * @param middleText1 中间文字
+     * @param rightText  右侧文字
+     * @return
+     */
+    @SuppressLint("NewApi")
+    public static String printFourDataOld(String leftText, String middleText1, String middleText2, String rightText) {
+        StringBuilder sb = new StringBuilder();
+        /**
+         * 打印三列时，中间一列的中心线距离打印纸左侧的距离
+         */
         int LEFT_LENGTH =LINE_BYTE_SIZE/2;
 
         /**
@@ -1025,7 +1087,7 @@ public class MKBluetoothPrinter extends CordovaPlugin {
 
         // 左边最多显示 LEFT_TEXT_MAX_LENGTH 个汉字 + 两个点
         if (leftText.length() > (LEFT_TEXT_MAX_LENGTH+2)/2) {
-            leftText = leftText.substring(0, (LEFT_TEXT_MAX_LENGTH+2)/2) + "..";
+            //leftText = leftText.substring(0, (LEFT_TEXT_MAX_LENGTH+2)/2-1) + ".";
         }
         int leftTextLength = getBytesLength(leftText);
         int middle1TextLength = getBytesLength(middleText1);
@@ -1057,7 +1119,7 @@ public class MKBluetoothPrinter extends CordovaPlugin {
             sb.append(" ");
         }
         // 打印的时候发现，最右边的文字总是偏右一个字符，所以需要删除一个空格
-        sb.delete(sb.length() - 1, sb.length()).append(rightText);
+        sb.delete(sb.length() - 3, sb.length()).append(rightText);
         return sb.toString();
     }
 
