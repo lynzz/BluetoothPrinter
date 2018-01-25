@@ -525,7 +525,7 @@ static NSInteger k_pageWidth = 0;
     }else{
         self.lineStr = @"- - - - - - - - - - - - - - - - - - - - - - - -";
         self.offsetAryfor3Text = [NSArray arrayWithObjects:@(240), @(480), nil];
-        self.offsetAryfor4Text = [NSArray arrayWithObjects:@(210), @(350), @(480), nil];
+        self.offsetAryfor4Text = [NSArray arrayWithObjects:@(210), @(340), @(460), nil];
         self.virtualWidth = 46;
     }
 }
