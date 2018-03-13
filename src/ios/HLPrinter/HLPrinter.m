@@ -375,7 +375,7 @@ static NSInteger k_pageWidth = 0;
         }
         
         if ([texts[0] length] > 0) {
-            [self setText:texts[0] maxChar:10];
+            [self setText:texts[0] maxChar:20];
         }
         
         if ([texts[1] length] > 0) {
@@ -525,7 +525,7 @@ static NSInteger k_pageWidth = 0;
     }else{
         self.lineStr = @"- - - - - - - - - - - - - - - - - - - - - - - -";
         self.offsetAryfor3Text = [NSArray arrayWithObjects:@(240), @(480), nil];
-        self.offsetAryfor4Text = [NSArray arrayWithObjects:@(210), @(340), @(460), nil];
+        self.offsetAryfor4Text = [NSArray arrayWithObjects:@(280), @(380), @(470), nil];
         self.virtualWidth = 46;
     }
 }
