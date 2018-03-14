@@ -481,7 +481,7 @@
         [self.printerInfo appendNewLine];
         [self.printerInfo appendNewLine];
     }
-    [self.printerInfo appendCutPaper];
+    // [self.printerInfo appendCutPaper];
 }
 
 - (void)appentTextListWith:(MKPrinterInfoModel *)model{
