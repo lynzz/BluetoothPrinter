@@ -527,7 +527,7 @@
 - (void)printerRowTextInfoWith:(NSArray *)textAry isTitle:(BOOL)isTitle{
     if (textAry.count == 3) {
         NSString *str = [textAry objectAtIndex:0];
-        NSString *frontStr = [self getFullLineString:str];
+        NSString *frontStr = [self getSubString:str max:[HLPrinter sharedInstance].maxLength3Text];
         [[HLPrinter sharedInstance] appendLeftText:frontStr middleText:textAry[1] rightText:textAry[2] isTitle:isTitle];
         if (str.length > frontStr.length) {
             NSString *subStr = [str substringFromIndex:frontStr.length];
@@ -536,7 +536,7 @@
         }
     }else if (textAry.count == 4){
         NSString *str = [textAry objectAtIndex:0];
-        NSString *frontStr = [self getFullLineString:str];
+        NSString *frontStr = [self getSubString:str max:[HLPrinter sharedInstance].maxLength4Text];
         NSMutableArray *ary = [NSMutableArray arrayWithObjects:frontStr, textAry[1], textAry[2], textAry[3], nil];
         [[HLPrinter sharedInstance] appendTextArray:ary isTitle:isTitle];
         if (str.length > frontStr.length) {
@@ -547,23 +547,34 @@
     }
 }
 
-- (NSString *)getFullLineString:(NSString *)str{
-    int length = 0;
-    NSInteger index = 0;
-    for (NSInteger i = 0; i < str.length; i++) {
-        unichar a = [str characterAtIndex:i];
-        if ([self isChinese:a]) {
-            length = length + 2;
-        }else{
-            length = length + 1;
-        }
-        if (length <= 20) {
-            index = index + 1;
-        }else{
-            break;
+- (NSString *)getSubString:(NSString *)str max:(NSInteger)maxChar{
+    NSStringEncoding enc = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingGB_18030_2000);
+    NSData *data = [str dataUsingEncoding:enc];
+    if (data.length > maxChar) {
+        data = [data subdataWithRange:NSMakeRange(0, maxChar)];
+        str = [[NSString alloc] initWithData:data encoding:enc];
+        if (!str) {
+            data = [data subdataWithRange:NSMakeRange(0, maxChar - 1)];
+            str = [[NSString alloc] initWithData:data encoding:enc];
         }
     }
-    return [str substringToIndex:index];
+    return str;
+//    int length = 0;
+//    NSInteger index = 0;
+//    for (NSInteger i = 0; i < str.length; i++) {
+//        unichar a = [str characterAtIndex:i];
+//        if ([self isChinese:a]) {
+//            length = length + 2;
+//        }else{
+//            length = length + 1;
+//        }
+//        if (length <= maxChar) {
+//            index = index + 1;
+//        }else{
+//            break;
+//        }
+//    }
+//    return [str substringToIndex:index];
 }
 
 /** 是否是汉字 */
