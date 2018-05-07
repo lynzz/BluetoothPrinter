@@ -45,8 +45,31 @@
  * 获取当前设置的打印机纸张宽度
  */
 - (void)getCurrentSetPageWidth:(CDVInvokedUrlCommand *)command{
-    NSInteger cacheWidth = [self.printerInfo getPageWidth];
+    NSInteger cacheWidth = self.printerInfo.pageWidth;
     [self callBackSuccess:YES callBackId:command.callbackId message:[NSString stringWithFormat:@"%ld",cacheWidth]];
+}
+
+/** 设置 首列 最大字符串长度 */
+- (void)setFirstRankMaxLength:(CDVInvokedUrlCommand *)command{
+    if (command.arguments.count > 1) {
+        if (command.arguments[0] != [NSNull null]){
+            NSInteger length = [command.arguments[0] integerValue];
+            if (length > 0) {
+                self.printerInfo.maxLength3Text = length;
+            }
+        }
+        if (command.arguments[1] != [NSNull null]){
+            NSInteger length = [command.arguments[1] integerValue];
+            if (length > 0) {
+                self.printerInfo.maxLength4Text = length;
+            }
+        }
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        [self callBackSuccess:YES callBackId:command.callbackId message:[NSString stringWithFormat:@"设置成功"]];
+        return;
+    }
+    [self callBackSuccess:NO callBackId:command.callbackId message:@"参数为数字数组，例  [16,20]"];
+
 }
 
 /** 自动连接 */
@@ -477,7 +500,7 @@
                 break;
         }
     }
-    if ([self.printerInfo getPageWidth] == 58) {
+    if (self.printerInfo.pageWidth == 58) {
         [self.printerInfo appendNewLine];
         [self.printerInfo appendNewLine];
     }
@@ -496,10 +519,40 @@
     
     if (model.textArray.count == 2) {
         [self.printerInfo appendTitle:tempAry[0] value:tempAry[1]];
-    }else if (model.textArray.count == 3){
-        [self.printerInfo appendLeftText:tempAry[0] middleText:tempAry[1] rightText:tempAry[2] isTitle:model.isTitle == 1];
-    }else if (model.textArray.count == 4){
-        [self.printerInfo appendTextArray:tempAry isTitle:model.isTitle];
+    }else if (model.textArray.count == 3 || model.textArray.count == 4){
+        [self printerRowTextInfoWith:model.textArray isTitle:model.isTitle == 1];
+    }
+}
+
+- (void)printerRowTextInfoWith:(NSArray *)textAry isTitle:(BOOL)isTitle{
+    if (textAry.count == 3) {
+        if ([textAry[0] length] > self.printerInfo.maxLength3Text){
+            NSString *str = [textAry objectAtIndex:0];
+            NSString *frontStr= [str substringToIndex:self.printerInfo.maxLength3Text];
+            [self.printerInfo appendLeftText:frontStr middleText:textAry[1] rightText:textAry[2] isTitle:isTitle];
+
+            NSString *subStr = [str substringFromIndex:self.printerInfo.maxLength3Text];
+            NSMutableArray *nextAry = [NSMutableArray arrayWithObjects:subStr, @" ", @" ", nil];
+            [self printerRowTextInfoWith:nextAry isTitle:isTitle];
+            
+        }else{
+            [self.printerInfo appendLeftText:textAry[0]  middleText:textAry[1] rightText:textAry[2] isTitle:isTitle];
+        }
+    }else if (textAry.count == 4){
+        if ([textAry[0] length] > self.printerInfo.maxLength4Text){
+
+            NSString *str = [textAry objectAtIndex:0];
+            NSString *frontStr= [str substringToIndex:self.printerInfo.maxLength4Text];
+            NSMutableArray *ary = [NSMutableArray arrayWithObjects:frontStr, textAry[1], textAry[2], textAry[3], nil];
+            [self.printerInfo appendTextArray:ary isTitle:isTitle];
+            
+            NSString *subStr = [str substringFromIndex:self.printerInfo.maxLength4Text];
+            NSMutableArray *nextAry = [NSMutableArray arrayWithObjects:subStr, @" ", @" ", @" ", nil];
+            [self printerRowTextInfoWith:nextAry isTitle:isTitle];
+            
+        }else{
+            [self.printerInfo appendTextArray:textAry isTitle:isTitle];
+        }
     }
 }
 

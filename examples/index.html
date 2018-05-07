@@ -10,6 +10,10 @@
             function setPrinterPageWidth(){
                 printerHelper.setPrinterPageWidth(printOCLogSuccess, failedCallBack, 58);
             }
+
+             function setFirstRankMaxLength(){
+                printerHelper.setFirstRankMaxLength(printOCLogSuccess, failedCallBack, 16, 20);
+            }
             
             function getCurrentSetPageWidth(){
                 printerHelper.getCurrentSetPageWidth(printOCLogSuccess, failedCallBack);
@@ -70,7 +74,7 @@
                 printerInfoHelper.appendText("地址:深圳市南 山区学府路东深大店阿里看到解放啦肯德基边上", BTPAlignmentType.left);
                 printerInfoHelper.appendSeperatorLine();
                 
-                printerInfoHelper.appendTextList(["商品","数量","单价"],1);
+                printerInfoHelper.appendTextList(["商品商品商品商品商品商品商品商品商品20商品商品商品","数量","单价"],1);
                 printerInfoHelper.appendTextList(["铅笔",5,2.0]);
                 printerInfoHelper.appendTextList(["橡皮",1,1.0]);
                 printerInfoHelper.appendSeperatorLine();
@@ -151,6 +155,8 @@
         <br>
         <br>
         <button style="font-size:17px;" onclick="setPrinterPageWidth();">设置纸张宽度</button>
+        <br>
+        <button style="font-size:17px;" onclick="setFirstRankMaxLength();">设置(3、4列)第一列字符最大长度</button>
         <br>
         <button style="font-size:17px;" onclick="getCurrentSetPageWidth();">获取当前纸张宽度</button>
         <br>

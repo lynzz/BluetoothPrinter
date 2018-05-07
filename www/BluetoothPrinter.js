@@ -10,6 +10,13 @@ function BluetoothPrinter(){};
  }
 
 /*
+ * 设置(3、4列)第一列字符最大长度打印机宽度
+ */
+BluetoothPrinter.prototype.setFirstRankMaxLength = function(success, fail, text3, text4){
+    exec(success, fail, 'MKBluetoothPrinter', 'setFirstRankMaxLength', [text3,text4])
+}
+
+/*
  * 获取当前设置的纸张宽度
  */
 BluetoothPrinter.prototype.getCurrentSetPageWidth = function(success, fail){

@@ -12,8 +12,14 @@
 #define kHLPadding 2
 #define kHLPreviewWidth 320
 
-#define KDefaultPageWidth 78
+#define KDefault_pageWidth 78
 static NSString * const kUD_pringerPageWidth = @"kUD_pringerPageWidth";
+
+#define kDefault_maxLength3Text 16
+#define kDefault_maxLength4Text 24
+
+static NSString * const kUD_maxLength3Text = @"kUD_maxLength3Text";
+static NSString * const kUD_maxLength4Text = @"kUD_maxLength4Text";
 
 @interface HLPrinter ()
 
@@ -33,7 +39,6 @@ static NSString * const kUD_pringerPageWidth = @"kUD_pringerPageWidth";
     return self;
 }
 
-static NSInteger k_pageWidth = 0;
 - (void)defaultSetting{
     _printerData = [[NSMutableData alloc] init];
     
@@ -48,30 +53,53 @@ static NSInteger k_pageWidth = 0;
     Byte fontBytes[] = {0x1B,0x4D,0x00};
     [_printerData appendBytes:fontBytes length:sizeof(fontBytes)];
     
-    k_pageWidth = [[NSUserDefaults standardUserDefaults] integerForKey:kUD_pringerPageWidth];
-    if (k_pageWidth <= 0) {
-        k_pageWidth = KDefaultPageWidth;
-        [[NSUserDefaults standardUserDefaults] setInteger:k_pageWidth forKey:kUD_pringerPageWidth];
+    _pageWidth = [[NSUserDefaults standardUserDefaults] integerForKey:kUD_pringerPageWidth];
+    if (_pageWidth <= 0) {
+        _pageWidth = KDefault_pageWidth;
+        [[NSUserDefaults standardUserDefaults] setInteger:_pageWidth forKey:kUD_pringerPageWidth];
         [[NSUserDefaults standardUserDefaults] synchronize];
     }
     
     _config = [[MKPageWidthConfig alloc] init];
-    [_config setupConfigWith:k_pageWidth];
+    [_config setupConfigWith:_pageWidth];
+    
+    _maxLength3Text = [[NSUserDefaults standardUserDefaults] integerForKey:kUD_maxLength3Text];
+    if (_maxLength3Text <= 0) {
+        _maxLength3Text = kDefault_maxLength3Text;
+    }
+    
+    _maxLength4Text = [[NSUserDefaults standardUserDefaults] integerForKey:kUD_maxLength4Text];
+    if (_maxLength4Text <= 0) {
+        _maxLength4Text = kDefault_maxLength4Text;
+    }
+}
+
+- (void)setMaxLength3Text:(NSInteger)maxLength3Text{
+    if (maxLength3Text > 0) {
+        _maxLength3Text = maxLength3Text;
+        [[NSUserDefaults standardUserDefaults] setInteger:_maxLength3Text forKey:kUD_maxLength3Text];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+}
+
+- (void)setMaxLength4Text:(NSInteger)maxLength4Text{
+    if (maxLength4Text > 0) {
+        _maxLength4Text = maxLength4Text;
+        [[NSUserDefaults standardUserDefaults] setInteger:_maxLength4Text forKey:kUD_maxLength4Text];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
 }
 
 #pragma mark - ***** 设置打印机纸张宽度 ******
-- (void)setPageWidth:(NSInteger)width{
-    if (width > 0) {
-        k_pageWidth = width;
-        [[NSUserDefaults standardUserDefaults] setInteger:k_pageWidth forKey:kUD_pringerPageWidth];
+- (void)setPageWidth:(CGFloat)pageWidth{
+    if (pageWidth > 0) {
+        _pageWidth = pageWidth;
+        [[NSUserDefaults standardUserDefaults] setInteger:_pageWidth forKey:kUD_pringerPageWidth];
         [[NSUserDefaults standardUserDefaults] synchronize];
-        [self.config setupConfigWith:k_pageWidth];
-     }
+        [self.config setupConfigWith:_pageWidth];
+    }
 }
 
-- (NSInteger)getPageWidth{
-    return k_pageWidth;
-}
 
 #pragma mark - -------------基本操作----------------
 /**
@@ -116,8 +144,15 @@ static NSInteger k_pageWidth = 0;
  *  @param text 文字内容
  */
 - (void)setText:(NSString *)text{
+    NSString *str;
+    if ([text isKindOfClass:[NSNumber class]]) {
+        str = [NSString stringWithFormat:@"%@", str];
+    }else{
+        str = text;
+    }
+    
     NSStringEncoding enc = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingGB_18030_2000);
-    NSData *data = [text dataUsingEncoding:enc];
+    NSData *data = [str dataUsingEncoding:enc];
     [_printerData appendData:data];
 }
 
