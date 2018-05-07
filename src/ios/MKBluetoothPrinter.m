@@ -19,7 +19,7 @@
 @property (nonatomic, strong) CBPeripheral *connectPeripheral;      /*!< 连接的外设 */
 @property (nonatomic, strong) CBCharacteristic *chatacter;          /*!< 可写入数据的特性 */
 @property (nonatomic, strong) NSMutableArray *servicesArray;        /*!< 外设 服务列表 */
-@property (nonatomic, strong) HLPrinter *printerInfo;               /*!< 打印数据 */
+//@property (nonatomic, strong) HLPrinter *printerInfo;               /*!< 打印数据 */
 @property (nonatomic, strong) NSMutableArray *printerModelArray;    /*!< 打印信息数组 主要用于排序*/
 @end
 
@@ -33,7 +33,7 @@
         NSString *param = command.arguments[0];
         NSInteger width = param.integerValue;
         if (width > 0) {
-            [self.printerInfo setPageWidth:width];
+            [HLPrinter sharedInstance].pageWidth = width;
             [self callBackSuccess:YES callBackId:command.callbackId message:[NSString stringWithFormat:@"设置纸张宽度成功:%ld",width]];
             return;
         }
@@ -45,7 +45,7 @@
  * 获取当前设置的打印机纸张宽度
  */
 - (void)getCurrentSetPageWidth:(CDVInvokedUrlCommand *)command{
-    NSInteger cacheWidth = self.printerInfo.pageWidth;
+    NSInteger cacheWidth = [HLPrinter sharedInstance].pageWidth;
     [self callBackSuccess:YES callBackId:command.callbackId message:[NSString stringWithFormat:@"%ld",cacheWidth]];
 }
 
@@ -55,13 +55,13 @@
         if (command.arguments[0] != [NSNull null]){
             NSInteger length = [command.arguments[0] integerValue];
             if (length > 0) {
-                self.printerInfo.maxLength3Text = length;
+                [HLPrinter sharedInstance].maxLength3Text = length;
             }
         }
         if (command.arguments[1] != [NSNull null]){
             NSInteger length = [command.arguments[1] integerValue];
             if (length > 0) {
-                self.printerInfo.maxLength4Text = length;
+                [HLPrinter sharedInstance].maxLength4Text = length;
             }
         }
         [[NSUserDefaults standardUserDefaults] synchronize];
@@ -464,45 +464,45 @@
         
         switch (model.infoType) {
             case MKBTPrinterInfoType_text:
-                [self.printerInfo appendText:model.text alignment:[model getAlignment] fontSize:[model getFontSize]];
+                [[HLPrinter sharedInstance] appendText:model.text alignment:[model getAlignment] fontSize:[model getFontSize]];
                 break;
             case MKBTPrinterInfoType_textList:{
                 [self appentTextListWith:model];
             }
                 break;
             case MKBTPrinterInfoType_barCode:
-                [self.printerInfo appendBarCodeWithInfo:model.text alignment:[model getAlignment] maxWidth:model.maxWidth];
+                [[HLPrinter sharedInstance] appendBarCodeWithInfo:model.text alignment:[model getAlignment] maxWidth:model.maxWidth];
                 break;
             case MKBTPrinterInfoType_qrCode:
 //                [self.printerInfo appendQRCodeWithInfo:model.text size:model.qrCodeSize alignment:[model getAlignment]];
-                [self.printerInfo appendQRCodeWithInfo:model.text];
+                [[HLPrinter sharedInstance] appendQRCodeWithInfo:model.text];
                 break;
             case MKBTPrinterInfoType_image:{
                 UIImage *image = [UIImage mk_imageWithBase64:model.text];
                 if (image) {
-                    [self.printerInfo appendImage:image alignment:[model getAlignment] maxWidth:model.maxWidth];
+                    [[HLPrinter sharedInstance] appendImage:image alignment:[model getAlignment] maxWidth:model.maxWidth];
                 }
             }
                 break;
             case MKBTPrinterInfoType_seperatorLine:
-                [self.printerInfo appendSeperatorLine];
+                [[HLPrinter sharedInstance] appendSeperatorLine];
                 break;
             case MKBTPrinterInfoType_spaceLine:
-                [self.printerInfo appendSpaceLine];
+                [[HLPrinter sharedInstance] appendSpaceLine];
                 break;
             case MKBTPrinterInfoType_footer:
-                [self.printerInfo appendFooter:model.text];
+                [[HLPrinter sharedInstance] appendFooter:model.text];
                 break;
             case MKBTPrinterInfoType_cutpage:
-                [self.printerInfo appendCutPaper];
+                [[HLPrinter sharedInstance] appendCutPaper];
                 break;
             default:
                 break;
         }
     }
-    if (self.printerInfo.pageWidth == 58) {
-        [self.printerInfo appendNewLine];
-        [self.printerInfo appendNewLine];
+    if ([HLPrinter sharedInstance].pageWidth == 58) {
+        [[HLPrinter sharedInstance] appendNewLine];
+        [[HLPrinter sharedInstance] appendNewLine];
     }
     // [self.printerInfo appendCutPaper];
 }
@@ -518,7 +518,7 @@
     }
     
     if (model.textArray.count == 2) {
-        [self.printerInfo appendTitle:tempAry[0] value:tempAry[1]];
+        [[HLPrinter sharedInstance] appendTitle:tempAry[0] value:tempAry[1]];
     }else if (model.textArray.count == 3 || model.textArray.count == 4){
         [self printerRowTextInfoWith:model.textArray isTitle:model.isTitle == 1];
     }
@@ -526,34 +526,52 @@
 
 - (void)printerRowTextInfoWith:(NSArray *)textAry isTitle:(BOOL)isTitle{
     if (textAry.count == 3) {
-        if ([textAry[0] length] > self.printerInfo.maxLength3Text){
-            NSString *str = [textAry objectAtIndex:0];
-            NSString *frontStr= [str substringToIndex:self.printerInfo.maxLength3Text];
-            [self.printerInfo appendLeftText:frontStr middleText:textAry[1] rightText:textAry[2] isTitle:isTitle];
-
-            NSString *subStr = [str substringFromIndex:self.printerInfo.maxLength3Text];
+        NSString *str = [textAry objectAtIndex:0];
+        NSString *frontStr = [self getFullLineString:str];
+        [[HLPrinter sharedInstance] appendLeftText:frontStr middleText:textAry[1] rightText:textAry[2] isTitle:isTitle];
+        if (str.length > frontStr.length) {
+            NSString *subStr = [str substringFromIndex:frontStr.length];
             NSMutableArray *nextAry = [NSMutableArray arrayWithObjects:subStr, @" ", @" ", nil];
             [self printerRowTextInfoWith:nextAry isTitle:isTitle];
-            
-        }else{
-            [self.printerInfo appendLeftText:textAry[0]  middleText:textAry[1] rightText:textAry[2] isTitle:isTitle];
         }
     }else if (textAry.count == 4){
-        if ([textAry[0] length] > self.printerInfo.maxLength4Text){
-
-            NSString *str = [textAry objectAtIndex:0];
-            NSString *frontStr= [str substringToIndex:self.printerInfo.maxLength4Text];
-            NSMutableArray *ary = [NSMutableArray arrayWithObjects:frontStr, textAry[1], textAry[2], textAry[3], nil];
-            [self.printerInfo appendTextArray:ary isTitle:isTitle];
-            
-            NSString *subStr = [str substringFromIndex:self.printerInfo.maxLength4Text];
+        NSString *str = [textAry objectAtIndex:0];
+        NSString *frontStr = [self getFullLineString:str];
+        NSMutableArray *ary = [NSMutableArray arrayWithObjects:frontStr, textAry[1], textAry[2], textAry[3], nil];
+        [[HLPrinter sharedInstance] appendTextArray:ary isTitle:isTitle];
+        if (str.length > frontStr.length) {
+            NSString *subStr = [str substringFromIndex:frontStr.length];
             NSMutableArray *nextAry = [NSMutableArray arrayWithObjects:subStr, @" ", @" ", @" ", nil];
             [self printerRowTextInfoWith:nextAry isTitle:isTitle];
-            
-        }else{
-            [self.printerInfo appendTextArray:textAry isTitle:isTitle];
         }
     }
+}
+
+- (NSString *)getFullLineString:(NSString *)str{
+    int length = 0;
+    NSInteger index = 0;
+    for (NSInteger i = 0; i < str.length; i++) {
+        unichar a = [str characterAtIndex:i];
+        if ([self isChinese:a]) {
+            length = length + 2;
+        }else{
+            length = length + 1;
+        }
+        if (length <= 20) {
+            index = index + 1;
+        }else{
+            break;
+        }
+    }
+    return [str substringToIndex:index];
+}
+
+/** 是否是汉字 */
+- (BOOL)isChinese:(unichar)word{
+    if( word >= 0x4e00 && word <= 0x9fff){
+        return YES;
+    }
+    return NO;
 }
 
 - (void)finalPrinterWithBlock:(CommandBlcok)block{
@@ -573,7 +591,7 @@
         return;
     }
     
-    NSData *mainData = [self.printerInfo getFinalData];
+    NSData *mainData = [[HLPrinter sharedInstance] getFinalData];
     if (self.chatacter.properties & CBCharacteristicPropertyWrite) {
         [self.manager writeValue:mainData forCharacteristic:self.chatacter type:CBCharacteristicWriteWithResponse completionBlock:^(CBCharacteristic *characteristic, NSError *error) {
             if (!error) {
@@ -595,7 +613,7 @@
 }
 
 - (void)clearPrinterInfo{
-    _printerInfo = nil;
+    [[HLPrinter sharedInstance] defaultSetting];
 }
 
 - (void)consoleLog:(NSString *)log{
@@ -623,12 +641,12 @@
     return _manager;
 }
 
-- (HLPrinter *)printerInfo{
-    if (!_printerInfo) {
-        _printerInfo = [[HLPrinter alloc] init];
-    }
-    return _printerInfo;
-}
+//- (HLPrinter *)printerInfo{
+//    if (!_printerInfo) {
+//        _printerInfo = [[HLPrinter alloc] init];
+//    }
+//    return _printerInfo;
+//}
 
 - (NSMutableArray *)peripheralsArray{
     if (!_peripheralsArray) {

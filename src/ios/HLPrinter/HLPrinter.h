@@ -35,6 +35,9 @@ typedef NS_ENUM(NSInteger, HLFontSize) {
 @property (nonatomic, assign) NSInteger maxLength4Text;
 @property (nonatomic, assign) NSInteger pageWidth;        /*!< 打印机纸张宽度 */
 
++ (instancetype)sharedInstance;
+- (void)defaultSetting;
+
 /**
  *  添加单行标题,默认字号是小号字体
  *

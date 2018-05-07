@@ -31,6 +31,16 @@ static NSString * const kUD_maxLength4Text = @"kUD_maxLength4Text";
 
 @implementation HLPrinter
 
+/** 单例 */
+static HLPrinter *sharedInstance = nil;
++ (instancetype)sharedInstance {
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+        sharedInstance = [[self alloc] init];
+    });
+    return sharedInstance;
+}
+
 - (instancetype)init{
     self = [super init];
     if (self) {
@@ -91,7 +101,7 @@ static NSString * const kUD_maxLength4Text = @"kUD_maxLength4Text";
 }
 
 #pragma mark - ***** 设置打印机纸张宽度 ******
-- (void)setPageWidth:(CGFloat)pageWidth{
+- (void)setPageWidth:(NSInteger)pageWidth{
     if (pageWidth > 0) {
         _pageWidth = pageWidth;
         [[NSUserDefaults standardUserDefaults] setInteger:_pageWidth forKey:kUD_pringerPageWidth];
@@ -382,7 +392,7 @@ static NSString * const kUD_maxLength4Text = @"kUD_maxLength4Text";
     }
     
     if (left) {
-        [self setText:left maxChar:10];
+        [self setText:left maxChar:(int)[HLPrinter sharedInstance].maxLength3Text];
     }
     
     if (middle) {
@@ -410,7 +420,7 @@ static NSString * const kUD_maxLength4Text = @"kUD_maxLength4Text";
         }
         
         if ([texts[0] length] > 0) {
-            [self setText:texts[0] maxChar:20];
+            [self setText:texts[0] maxChar:(int)[HLPrinter sharedInstance].maxLength4Text];
         }
         
         if ([texts[1] length] > 0) {
