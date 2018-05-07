@@ -16,7 +16,7 @@
 static NSString * const kUD_pringerPageWidth = @"kUD_pringerPageWidth";
 
 #define kDefault_maxLength3Text 16
-#define kDefault_maxLength4Text 24
+#define kDefault_maxLength4Text 20
 
 static NSString * const kUD_maxLength3Text = @"kUD_maxLength3Text";
 static NSString * const kUD_maxLength4Text = @"kUD_maxLength4Text";
