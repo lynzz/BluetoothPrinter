@@ -1,12 +1,15 @@
 {
   "name": "@lynzz/cordova-plugin-bluetooth-printer",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "cordova bluetooth printer plugin",
   "cordova": {
     "id": "cordova-plugin-bluetooth-printer",
     "platforms": [
       "ios"
     ]
+  },
+  "scripts": {
+    "pub": "npm publish --registry=http://registry.npmjs.org --access=public"
   },
   "repository": {
     "type": "git",

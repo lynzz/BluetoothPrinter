@@ -173,11 +173,15 @@ PrinterInfoHelper.prototype.appendText = function (text, alignment, fontType) {
  * textList     : 信息列表，
  * isTitle      : 是否标题       optional   1是，0否，  default：0
  */
-PrinterInfoHelper.prototype.appendTextList = function (textList, isTitle) {
+PrinterInfoHelper.prototype.appendTextList = function (textList, isTitle, fontType) {
     var infoModel = new Object();
     infoModel.infoType = BTPInfoType.textList;
     infoModel.textArray = textList;
-    infoModel.isTitle = isTitle
+    infoModel.isTitle = isTitle;
+    if (fontType !== undefined) {
+        infoModel.fontType = fontType;
+    }
+    
     _printerInfos.push(infoModel);
 }
 
