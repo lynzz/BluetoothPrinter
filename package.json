@@ -1,6 +1,6 @@
 {
-  "name": "cordova-plugin-bluetooth-printer",
-  "version": "1.0.2",
+  "name": "@lynzz/cordova-plugin-bluetooth-printer",
+  "version": "1.0.3",
   "description": "cordova bluetooth printer plugin",
   "cordova": {
     "id": "cordova-plugin-bluetooth-printer",

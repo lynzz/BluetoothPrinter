@@ -2,5 +2,5 @@
 
 #### Installation
 ```
-cordova plugin cordova-plugin-bluetooth-printer
+cordova plugin add @lynzz/cordova-plugin-bluetooth-printer
 ```
