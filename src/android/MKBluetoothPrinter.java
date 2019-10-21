@@ -134,7 +134,12 @@ public class MKBluetoothPrinter extends CordovaPlugin {
     public static final int FONT_NORMAL_NEW  = 0;    // 正常
     public static final int FONT_MIDDLE_NEW = 1;    // 中等
     public static final int FONT_BIG_NEW  = 2;       // 大
-
+    public static final int FONT_BIG_NEW3 = 3;    // 字体3
+    public static final int FONT_BIG_NEW4  = 4;       // 字体4
+    public static final int FONT_BIG_NEW5 = 5;    // 字体5
+    public static final int FONT_BIG_NEW6  = 6;       // 字体6
+    public static final int FONT_BIG_NEW7  = 7;    // 字体7
+    public static final int FONT_BIG_NEW8  = 8;       // 字体8
     //加粗模式
     public static final int FONT_BOLD_NEW  = 0;              // 字体加粗
     public static final int FONT_BOLD_CANCEL_NEW  = 1;       // 取消加粗
@@ -1384,6 +1389,18 @@ public class MKBluetoothPrinter extends CordovaPlugin {
             data[2] = (byte) 0x01;
         } else if (fontSize == FONT_BIG_NEW ) {
             data[2] = (byte) 0x11;
+        }else if (fontSize == FONT_BIG_NEW3 ) {
+            data[2] = (byte) 0x10;
+        }else if (fontSize == FONT_BIG_NEW4 ) {
+            data[2] = (byte) 0x12;
+        }else if (fontSize == FONT_BIG_NEW5 ) {
+            data[2] = (byte) 0x21;
+        }else if (fontSize == FONT_BIG_NEW6 ) {
+            data[2] = (byte) 0x22;
+        }else if (fontSize == FONT_BIG_NEW7 ) {
+            data[2] = (byte) 0x33;
+        }else if (fontSize == FONT_BIG_NEW8 ) {
+            data[2] = (byte) 0x44;
         }
 
         return data;

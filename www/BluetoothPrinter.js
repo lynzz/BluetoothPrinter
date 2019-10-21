@@ -117,6 +117,12 @@ if (typeof BTPFontType == "undefined"){
     BTPFontType.smalle  = 0;
     BTPFontType.middle  = 1;
     BTPFontType.big     = 2;
+    BTPFontType.big3     = 3;
+    BTPFontType.big4     = 4;
+    BTPFontType.big5     = 5;
+    BTPFontType.big6     = 6;
+    BTPFontType.big7     = 7;
+    BTPFontType.big8     = 8;
 }
 //  对齐方式  default:center
 if (typeof BTPAlignmentType == "undefined"){

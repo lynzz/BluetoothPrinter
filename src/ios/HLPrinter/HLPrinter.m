@@ -385,10 +385,11 @@ static HLPrinter *sharedInstance = nil;
 
 - (void)appendLeftText:(NSString *)left middleText:(NSString *)middle rightText:(NSString *)right isTitle:(BOOL)isTitle{
     [self setAlignment:HLTextAlignmentLeft];
-    [self setFontSize:HLFontSizeTitleSmalle];
+    
     NSInteger offset = 0;
     if (!isTitle) {
         offset = 10;
+        [self setFontSize:HLFontSizeTitleMiddle];
     }
     
     if (left) {
