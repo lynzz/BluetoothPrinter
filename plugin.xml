@@ -53,7 +53,7 @@
             <uses-permission android:name="android.permission.INTERNET" /> 
             <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" /> 
             <uses-permission android:name="android.permission.BLUETOOTH" /> 
-            <uses-feature android:name="android.hardware.usb.host" /> 
+            <uses-feature android:name="android.hardware.usb.host" android:required="false" /> 
             <uses-permission android:name="android.hardware.usb.accessory" /> 
             <uses-permission android:name="android.permission.DEVICE_POWER"/>
             <uses-permission android:name="android.permission.WAKE_LOCK"/> 

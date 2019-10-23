@@ -832,7 +832,7 @@ public class MKBluetoothPrinter extends CordovaPlugin {
         p.setTextSize(33);
         canvas.drawBitmap(src, 0, 0, p);
         canvas.drawText(mstrTitle, 20, 310, p);
-        canvas.save(Canvas.ALL_SAVE_FLAG);
+        canvas.save();
         canvas.restore();
         return bmpTemp;
     }
