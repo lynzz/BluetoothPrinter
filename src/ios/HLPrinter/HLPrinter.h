@@ -26,8 +26,8 @@ typedef NS_ENUM(NSInteger, HLTextAlignment) {
 /** 字号 */
 typedef NS_ENUM(NSInteger, HLFontSize) {
     HLFontSizeTitleSmalle = 0x00,
-    HLFontSizeTitleMiddle = 0x01,
-    HLFontSizeTitleBig = 0x11,
+    HLFontSizeTitleMiddle = 0x11,
+    HLFontSizeTitleBig = 0x22,
     HLFontSizeTitleBig3 = 0x10,
     HLFontSizeTitleBig4 = 0x12,
     HLFontSizeTitleBig5 = 0x21,
