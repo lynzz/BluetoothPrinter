@@ -832,7 +832,7 @@ public class MKBluetoothPrinter extends CordovaPlugin {
         p.setTextSize(33);
         canvas.drawBitmap(src, 0, 0, p);
         canvas.drawText(mstrTitle, 20, 310, p);
-        canvas.save(Canvas.ALL_SAVE_FLAG);
+        canvas.save();
         canvas.restore();
         return bmpTemp;
     }
@@ -1382,7 +1382,7 @@ public class MKBluetoothPrinter extends CordovaPlugin {
      * @return
      */
     public static  byte[]  getFontSizeCmd(int fontSize) {
-        byte[] data = {(byte) 0x1d, (byte) 0x21, (byte) 0x00};
+        byte[] data = {(byte) 0x1d, (byte) 0x21, (byte) 0x0};
         if (fontSize == FONT_NORMAL_NEW ) {
             data[2] = (byte) 0x00;
         } else if (fontSize == FONT_MIDDLE_NEW ) {

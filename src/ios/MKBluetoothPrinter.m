@@ -550,17 +550,31 @@
 - (NSString *)getSubString:(NSString *)str max:(NSInteger)maxChar{
     NSStringEncoding enc = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingGB_18030_2000);
     NSData *data = [str dataUsingEncoding:enc];
-    if (data.length <= maxChar) {
-        return str;
+    if (data.length > maxChar) {
+        data = [data subdataWithRange:NSMakeRange(0, maxChar)];
+        str = [[NSString alloc] initWithData:data encoding:enc];
+        if (!str) {
+            data = [data subdataWithRange:NSMakeRange(0, maxChar - 1)];
+            str = [[NSString alloc] initWithData:data encoding:enc];
+        }
     }
-    NSString *result;
-    NSInteger sub = 0;
-    while (!result) {
-        NSData *tData = [data subdataWithRange:NSMakeRange(0, maxChar-sub)];
-        result = [[NSString alloc] initWithData:tData encoding:enc];
-        sub += 1;
-    }
-    return result;
+    return str;
+//    int length = 0;
+//    NSInteger index = 0;
+//    for (NSInteger i = 0; i < str.length; i++) {
+//        unichar a = [str characterAtIndex:i];
+//        if ([self isChinese:a]) {
+//            length = length + 2;
+//        }else{
+//            length = length + 1;
+//        }
+//        if (length <= maxChar) {
+//            index = index + 1;
+//        }else{
+//            break;
+//        }
+//    }
+//    return [str substringToIndex:index];
 }
 
 /** 是否是汉字 */
